@@ -11,9 +11,12 @@
   "dependencies": {
     "@react-three/drei": "^10.0.3",
     "@react-three/fiber": "^9.0.4",
+    "leva": "^0.10.0",
+    "motion": "^12.4.2",
     "next": "15.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-responsive": "^10.0.1",
     "socket.io-client": "^4.8.1",
     "three": "^0.174.0"
   },
