@@ -7,36 +7,30 @@ Title: American Road
 */
 'use client'
 import React, { useRef } from 'react'
-import { useGLTF } from '@react-three/drei'
+import { useFrame, useLoader } from '@react-three/fiber'
+import * as THREE from 'three';
+
 
 const Environment = (props) => {
-  const { nodes, materials } = useGLTF('/models/scene.glb')
+  const groundref = useRef();
+  
+  const rockTexture = useLoader(THREE.TextureLoader, '/textures/rock2.jpg');
+
+  // Ensure the texture repeats and wraps correctly
+  rockTexture.wrapS = rockTexture.wrapT = THREE.RepeatWrapping;
+  rockTexture.repeat.set(2, 2); // Adjust to fit your needs
+
+  useFrame(() => { 
+    groundref.current.rotation.x += 0.006
+  });
+
   return (
-    <group {...props} dispose={null} >
-      <group rotation={[Math.PI / 2, 0, 0]}>
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Material2.geometry}
-          material={materials.RoadLines}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Material2_1.geometry}
-          material={materials.Sidewalk01}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Material2_2.geometry}
-          material={materials.Grass02}
-        />
-      </group>
-    </group>
+    <mesh  ref={groundref} receiveShadow castShadow={false} rotateZ={-Math.PI/2} position={[0, -24, 2]}>
+          <dodecahedronGeometry args={[26, 3]} />
+          <meshStandardMaterial map={rockTexture} color={'0xfffafa'} flatShading    />
+    </mesh>
   )
 }
 
-useGLTF.preload('/models/scene.glb')
 
 export default Environment
