@@ -19,7 +19,7 @@ const Page = () => {
   const [animation, setAnimation] = useState("running");
   
   const Skybox = () => {
-    const hdri = useLoader(RGBELoader, '/textures/your-sky.hdr'); // ✅ Ensure path is correct
+    const hdri = useLoader(RGBELoader, '/textures/your-sky.hdr'); 
     hdri.mapping = THREE.EquirectangularReflectionMapping;
   
     return <primitive attach="background" object={hdri} />;
