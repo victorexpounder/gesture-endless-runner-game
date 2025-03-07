@@ -8,9 +8,8 @@ import { EffectComposer, MotionBlur } from '@react-three/postprocessing';
 import { useGLTF } from '@react-three/drei';
 import Character1 from '@/components/Character1';
 import Environment from '@/components/environment';
-
-
-
+import CharacterRunning1 from '@/components/CharacterRunning1';
+import TWEEN, { Tween } from '@tweenjs/tween.js';
 
 
 const Page = () => {
@@ -25,32 +24,8 @@ const Page = () => {
     return <primitive attach="background" object={hdri} />;
   };
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'ArrowLeft') {
-        if(currentlane == 0){
-          setCurrentlane(-1)
-        }else if(currentlane == 1){
-          setCurrentlane(0)
-        }
-      } else if (event.key === 'ArrowRight') {
-        if(currentlane == 0){
-          setCurrentlane(1)
-        }else if(currentlane == -1){
-          setCurrentlane(0)
-        }
-      }else if (event.key === 'ArrowUp') {
-        setAnimation('jump');
-        
-      }
-    };
-  
-    window.addEventListener('keydown', handleKeyDown);
-  
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
+  TWEEN.upda
+
   return (
     <div className="w-screen h-screen">
       <Canvas className="w-full h-full" >
@@ -62,10 +37,11 @@ const Page = () => {
         <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} minPolarAngle={1.1} maxPolarAngle={1.1} minAzimuthAngle={-0.2} maxAzimuthAngle={0.2}/>
         <Sky sunPosition={[100, 20, 100]} turbidity={10} rayleigh={2} />
         <Environment/>
-        <Character1 position={[currentlane, 1.8, 4.8]} setAnimation={setAnimation} rotationZ={-60} scale={0.5} animationName={animation}/>
+        <CharacterRunning1 rotationZ={-60} />
       </Canvas>
     </div>
   );
 };
 
 export default Page;
+
