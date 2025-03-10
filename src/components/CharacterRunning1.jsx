@@ -9,26 +9,31 @@ import TWEEN, { Tween, Group } from '@tweenjs/tween.js';
 import { AnimationMixer } from 'three';
 
 
-const CharacterRunning1 = ({ setAnimation, rotationZ, ...props}) => {
+const CharacterRunning1 = ({ externalRef, setAnimation, rotationZ, ...props}) => {
   const { nodes, materials } = useGLTF('/models/humans/character1/character1.glb')
   const { animations: idleAnimation } =  useFBX('/models/humans/character1/idle.fbx')
   const { animations: runningAnimation } =  useFBX('/models/humans/character1/running.fbx')
   const { animations: jumpAnimation } =  useFBX('/models/humans/character1/jump.fbx')
-  console.log(idleAnimation)
+  const { animations: slideAnimation } =  useFBX('/models/humans/character1/slide.fbx')
+  
   const group = useRef()
   idleAnimation[0].name = 'idle'
   runningAnimation[0].name = 'running'
   jumpAnimation[0].name = 'jump'
+  slideAnimation[0].name = 'slide'
+
   const {actions} = useAnimations(
     [
       idleAnimation[0],
       runningAnimation[0],
       jumpAnimation[0],
+      slideAnimation[0]
     ], 
     group 
   )
   const tweenGroup = new Group();
   var isJumping = false 
+  var isSliding = false
   var currentAnimation = 'running' 
 
   const moveLeft = () =>{
@@ -73,21 +78,44 @@ const CharacterRunning1 = ({ setAnimation, rotationZ, ...props}) => {
         currentAnimation = 'jump'
         actions[currentAnimation].reset().setLoop(1,1).play()
         actions[currentAnimation].getMixer().addEventListener('finished', () => {
-        actions[currentAnimation].crossFadeTo(actions['running'], 0.1, false).play();
+        actions[currentAnimation].reset().crossFadeTo(actions['running'], 0.1, false).play();
         currentAnimation = 'running'
       })
 
-      const jumpingUp = new Tween(group.current.position).to({ y: group.current.position.y += 20 }, 400);
+      const jumpingUp = new Tween(group.current.position).to({ y: group.current.position.y += 0.5 }, 400);
       const jumpingDown = new Tween(group.current.position)
-        .to({ y: group.current.position.y -= 20 }, 500);
+        .to({ y: group.current.position.y -= 0.5 }, 400);
       jumpingUp.chain(jumpingDown);
       jumpingUp.start();
       jumpingDown.onComplete(() => {
         isJumping = false;
-        group.current.position.y = -35;
+        group.current.position.y = 1.8;
       });
       tweenGroup.add(jumpingUp)
       tweenGroup.add(jumpingDown)
+    }
+  }
+
+  const slide = () =>{
+    if (!isSliding) {    
+      if (isJumping) {
+        actions['jump'].stop()
+        group.current.position.y = 1.8;
+        isJumping = false;
+      }
+      isSliding = true;
+      
+      actions[currentAnimation].stop();
+      actions['slide'].reset();
+      currentAnimation = 'slide';
+      actions[currentAnimation].clampWhenFinished = true;
+      actions[currentAnimation].play();
+      actions[currentAnimation].crossFadeTo(actions['running'], 1.9, false).play();
+      currentAnimation = 'running';
+      setTimeout(() => {
+        group.current.position.y = 1.8;
+        isSliding = false;
+      }, 800);
     }
   }
 
@@ -99,7 +127,12 @@ const CharacterRunning1 = ({ setAnimation, rotationZ, ...props}) => {
     }, []); 
 
     useEffect(() => {
-        
+      if (externalRef) {
+        externalRef.current = group.current;
+      }
+    }, [externalRef]);
+
+    useEffect(() => {      
         const handleKeyDown = (event) => {
           if (event.key === 'ArrowLeft') {
             moveLeft()
@@ -108,6 +141,8 @@ const CharacterRunning1 = ({ setAnimation, rotationZ, ...props}) => {
             
           }else if (event.key === 'ArrowUp') {
             jump()
+          }else if (event.key === 'ArrowDown') {
+            slide()
           }
         };
       

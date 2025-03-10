@@ -10,12 +10,17 @@ import Character1 from '@/components/Character1';
 import Environment from '@/components/environment';
 import CharacterRunning1 from '@/components/CharacterRunning1';
 import TWEEN, { Tween } from '@tweenjs/tween.js';
+import Tress from '@/components/Tress';
+import TreeObstacles from '@/components/Tress';
+import BoxObstacles from '@/components/BoxObstacles';
 
 
 const Page = () => {
 
   const [currentlane, setCurrentlane] = useState(0);
   const [animation, setAnimation] = useState("running");
+  const characterRef = useRef();
+  const rollingGroundRef = useRef();
   
   const Skybox = () => {
     const hdri = useLoader(RGBELoader, '/textures/your-sky.hdr'); 
@@ -24,7 +29,11 @@ const Page = () => {
     return <primitive attach="background" object={hdri} />;
   };
 
-  TWEEN.upda
+  useEffect(() => {
+    console.log('heroRef:', characterRef.current);
+    console.log('rollingGroundSphereRef:', rollingGroundRef.current);
+  }, []);
+  
 
   return (
     <div className="w-screen h-screen">
@@ -34,10 +43,12 @@ const Page = () => {
         <directionalLight color={'0xcdc1c5'} intensity={1} position={[12, 6, -7]} castShadow shadow={{mapSize: [256, 256], camera: {near:  0.5, far:50}}}/>
         <ambientLight color={'0xfffafa'} intensity={1}/>
         <fogExp2 color={0xf0fff0} density={0.14} />
-        <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} minPolarAngle={1.1} maxPolarAngle={1.1} minAzimuthAngle={-0.2} maxAzimuthAngle={0.2}/>
+        <OrbitControls enableZoom={true} enablePan={false} enableRotate={false} minPolarAngle={1.1} maxPolarAngle={1.1} minAzimuthAngle={-0.2} maxAzimuthAngle={0.2}/>
         <Sky sunPosition={[100, 20, 100]} turbidity={10} rayleigh={2} />
-        <Environment/>
-        <CharacterRunning1 rotationZ={-60} />
+        <Environment externalRef={rollingGroundRef}/>
+        <CharacterRunning1 rotationZ={-60} externalRef={characterRef}/>
+        <BoxObstacles characterRef={characterRef}/>
+        <TreeObstacles  />
       </Canvas>
     </div>
   );

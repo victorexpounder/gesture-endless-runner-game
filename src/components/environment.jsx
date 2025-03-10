@@ -6,12 +6,12 @@ Source: https://sketchfab.com/3d-models/american-road-179a1e6a0a154031a60f300fc7
 Title: American Road
 */
 'use client'
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useFrame, useLoader } from '@react-three/fiber'
 import * as THREE from 'three';
 
 
-const Environment = (props) => {
+const Environment = ({externalRef, ...props}) => {
   const groundref = useRef();
   
   const rockTexture = useLoader(THREE.TextureLoader, '/textures/rock2.jpg');
@@ -19,6 +19,12 @@ const Environment = (props) => {
   // Ensure the texture repeats and wraps correctly
   rockTexture.wrapS = rockTexture.wrapT = THREE.RepeatWrapping;
   rockTexture.repeat.set(2, 2); // Adjust to fit your needs
+
+  useEffect(() => {
+    if (externalRef) {
+      externalRef.current = groundref.current;
+    }
+  }, [externalRef]);
 
   useFrame(() => { 
     groundref.current.rotation.x += 0.006
