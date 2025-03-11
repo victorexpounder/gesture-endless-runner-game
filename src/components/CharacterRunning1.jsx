@@ -7,27 +7,31 @@ import { useAnimations, useFBX, useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import TWEEN, { Tween, Group } from '@tweenjs/tween.js';
 import { AnimationMixer } from 'three';
+import { useGesture } from '@use-gesture/react';
 
 
-const CharacterRunning1 = ({ externalRef, setAnimation, rotationZ, ...props}) => {
+const CharacterRunning1 = ({ externalRef, setAnimation, isGameOver, rotationZ, ...props}) => {
   const { nodes, materials } = useGLTF('/models/humans/character1/character1.glb')
   const { animations: idleAnimation } =  useFBX('/models/humans/character1/idle.fbx')
   const { animations: runningAnimation } =  useFBX('/models/humans/character1/running.fbx')
   const { animations: jumpAnimation } =  useFBX('/models/humans/character1/jump.fbx')
   const { animations: slideAnimation } =  useFBX('/models/humans/character1/slide.fbx')
+  const { animations: fallingAnimation } =  useFBX('/models/humans/character1/falling.fbx')
   
   const group = useRef()
   idleAnimation[0].name = 'idle'
   runningAnimation[0].name = 'running'
   jumpAnimation[0].name = 'jump'
   slideAnimation[0].name = 'slide'
+  fallingAnimation[0].name = 'fall'
 
   const {actions} = useAnimations(
     [
       idleAnimation[0],
       runningAnimation[0],
       jumpAnimation[0],
-      slideAnimation[0]
+      slideAnimation[0],
+      fallingAnimation[0]
     ], 
     group 
   )
@@ -35,6 +39,7 @@ const CharacterRunning1 = ({ externalRef, setAnimation, rotationZ, ...props}) =>
   var isJumping = false 
   var isSliding = false
   var currentAnimation = 'running' 
+  var touchstartX, touchstartY, touchendX, touchendY
 
   const moveLeft = () =>{
       if(group.current.position.x !== -18)
@@ -111,6 +116,7 @@ const CharacterRunning1 = ({ externalRef, setAnimation, rotationZ, ...props}) =>
       actions[currentAnimation].clampWhenFinished = true;
       actions[currentAnimation].play();
       actions[currentAnimation].crossFadeTo(actions['running'], 1.9, false).play();
+      group.current.position.y = 1.6;
       currentAnimation = 'running';
       setTimeout(() => {
         group.current.position.y = 1.8;
@@ -120,11 +126,18 @@ const CharacterRunning1 = ({ externalRef, setAnimation, rotationZ, ...props}) =>
   }
 
   useEffect(() => {
-      actions[currentAnimation].reset().fadeIn(0.5).play();
+    if(isGameOver)
+      {
+        actions['fall'].clampWhenFinished = true;
+        actions['fall'].reset().fadeIn(0.5).setLoop(1,1).play();
+        currentAnimation = 'fall'
+      }else{
+        actions[currentAnimation].reset().fadeIn(0.5).play();
+      }
       if (nodes.Hips) {
         nodes.Hips.rotation.x = Math.PI / 2; // Rotate the root bone
       }
-    }, []); 
+    }, [isGameOver]); 
 
     useEffect(() => {
       if (externalRef) {
@@ -145,13 +158,56 @@ const CharacterRunning1 = ({ externalRef, setAnimation, rotationZ, ...props}) =>
             slide()
           }
         };
+
+        const handleGesture = (event) =>{
+          if (touchendX < touchstartX) {
+              moveLeft()
+          }
       
+          if (touchendX > touchstartX) {
+              moveRight()
+          }
+      
+          if (touchendY < touchstartY) {
+              jump()
+          }
+      
+          if (touchendY > touchstartY) {
+              slide()
+          }
+      
+          if (touchendY === touchstartY) {
+              console.log('Tap');
+          }
+        }
+
+        window.addEventListener('touchstart', function (event) {
+            touchstartX = event.changedTouches[0].screenX;
+            touchstartY = event.changedTouches[0].screenY;
+        }, false);
+        
+        window.addEventListener('touchend', function (event) {
+            touchendX = event.changedTouches[0].screenX;
+            touchendY = event.changedTouches[0].screenY;
+            handleGesture();
+        }, false);
         window.addEventListener('keydown', handleKeyDown);
       
         return () => {
+         
+          
           window.removeEventListener('keydown', handleKeyDown);
         };
       }, []);
+
+      const bind = useGesture({
+        onDrag: ({ movement: [mx, my], direction: [dx, dy] }) => {
+          if (dx > 0) moveRight();
+          if (dx < 0) moveLeft();
+          if (dy < 0) jump();
+          if (dy > 0) slide();
+        }
+      });
     
 
     useFrame((state, delta) => {
@@ -159,7 +215,7 @@ const CharacterRunning1 = ({ externalRef, setAnimation, rotationZ, ...props}) =>
     })
    
   return (
-    <group {...props}   scale={0.5} position={[0, 1.8, 4.8]} dispose={null} castShadow={true} receiveShadow={true} rotation={[-Math.PI / 2, 0, -60]}  ref={group}>
+    <group  {...props}  scale={0.5}  position={[0, 1.8, 4.8]} dispose={null} castShadow={true} receiveShadow={true} rotation={[-Math.PI / 2, 0, -60]} ref={group} {...bind()}>
       <primitive object={nodes.Hips} />
       <skinnedMesh
         name="EyeLeft"

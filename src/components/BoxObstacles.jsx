@@ -2,15 +2,16 @@ import { useFrame } from "@react-three/fiber";
 import React, { useRef, useState } from "react";
 import * as THREE from "three";
 
-const BoxObstacles = ({ characterRef, onGameOver }) => {
+const BoxObstacles = ({ characterRef, isGameOver, setIsGameOver }) => {
   const [boxes, setBoxes] = useState([]);
   const boxesRef = useRef([]);
   let elapsedTime = 0; // Track time for spawning
-  const isGameOver = useRef(false); // Track if the game is over
+  let [spawnFrequency, setSpawnFrequency] = useState(1.5)
+  
 
   const addBox = () => {
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const boxMaterial = new THREE.MeshLambertMaterial({ color: "#B4B4B3" });
+    const boxMaterial = new THREE.MeshLambertMaterial({ color: "red" });
     const box = new THREE.Mesh(boxGeometry, boxMaterial);
     const randomX = [0, 1, -1][Math.floor(Math.random() * 3)];
     box.position.set(randomX, 1.8, -5.8);
@@ -21,19 +22,24 @@ const BoxObstacles = ({ characterRef, onGameOver }) => {
   };
 
   useFrame((state, delta) => {
-    if (isGameOver.current) return; // Stop if game is over
+    if (isGameOver) return; // Stop if game is over
 
     elapsedTime += delta; // Accumulate time
-
+    
     // Spawn box every 0.5 seconds
-    if (elapsedTime > 0.5) {
+    if (elapsedTime > spawnFrequency) {
       addBox();
+      if(spawnFrequency > 0.5)
+      {
+        setSpawnFrequency((prev) => prev - 0.05)
+        console.log(spawnFrequency)
+      }
       elapsedTime = 0; // Reset timer
     }
 
     // Move boxes forward & check for collision
     boxesRef.current.forEach((box, index) => {
-      box.position.z += 0.3;
+      box.position.z += 0.2;
 
       if (box.position.z > 6) {
         boxesRef.current.splice(index, 1); // Remove from ref
@@ -48,8 +54,8 @@ const BoxObstacles = ({ characterRef, onGameOver }) => {
 
         if (boxBoundingBox.intersectsBox(characterBoundingBox) && playerY < 2.0) {
           console.log("Collision detected! Game Over");
-          isGameOver.current = true; // Stop game updates
-          onGameOver(); // Call game over function
+          setIsGameOver(true); // Stop game updates
+         
         }
       }
     });

@@ -11,7 +11,7 @@ import { useFrame, useLoader } from '@react-three/fiber'
 import * as THREE from 'three';
 
 
-const Environment = ({externalRef, ...props}) => {
+const Environment = ({externalRef, isGameOver, ...props}) => {
   const groundref = useRef();
   
   const rockTexture = useLoader(THREE.TextureLoader, '/textures/rock2.jpg');
@@ -27,7 +27,10 @@ const Environment = ({externalRef, ...props}) => {
   }, [externalRef]);
 
   useFrame(() => { 
-    groundref.current.rotation.x += 0.006
+    if(!isGameOver)
+    {
+      groundref.current.rotation.x += 0.006
+    }
   });
 
   return (
