@@ -14,6 +14,7 @@ import Tress from '@/components/Tress';
 import TreeObstacles from '@/components/Tress';
 import BoxObstacles from '@/components/BoxObstacles';
 import GameOverScreen from '@/components/GameOverScreen';
+import { useMediaQuery } from 'react-responsive';
 
 
 const Page = () => {
@@ -24,6 +25,8 @@ const Page = () => {
   const [resetKey, setResetKey] = useState(0);
   const characterRef = useRef();
   const rollingGroundRef = useRef();
+  const isMobile = useMediaQuery({maxWidth: 768})
+
   
   const Skybox = () => {
     const hdri = useLoader(RGBELoader, '/textures/your-sky.hdr'); 
@@ -45,13 +48,16 @@ const Page = () => {
 
   return (
     <div className="w-screen h-screen">
-      <Canvas className="w-full h-full" key={resetKey} >
-        <PerspectiveCamera makeDefault fov={60}  position={[0, 3.5, 6.5]}/>
+      <Canvas className="w-full h-full" key={resetKey}>
+        <PerspectiveCamera 
+        makeDefault fov={60}  
+        position={[0, 3.5, isMobile ? 10 : 6.5]}
+        />
         <hemisphereLight skyColor={'0xfffafa'} groundColor={0x000000} intensity={1}/>
         <directionalLight color={'0xcdc1c5'} intensity={1} position={[12, 6, -7]} castShadow shadow={{mapSize: [256, 256], camera: {near:  0.5, far:50}}}/>
         <ambientLight color={'0xfffafa'} intensity={1}/>
         <fogExp2 color={0xf0fff0} density={0.14} />
-        <OrbitControls enableZoom={true} enablePan={false} enableRotate={false} minPolarAngle={1.1} maxPolarAngle={1.1} minAzimuthAngle={-0.2} maxAzimuthAngle={0.2}/>
+        <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} minPolarAngle={1.1} maxPolarAngle={1.1} minAzimuthAngle={-0.2} maxAzimuthAngle={0.2}/>
         <Sky sunPosition={[100, 20, 100]} turbidity={10} rayleigh={2} />
         <Environment externalRef={rollingGroundRef} isGameOver={isGameOver}/>
         <CharacterRunning1 rotationZ={-60} externalRef={characterRef} isGameOver={isGameOver} />

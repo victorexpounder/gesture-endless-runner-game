@@ -159,27 +159,27 @@ const CharacterRunning1 = ({ externalRef, setAnimation, isGameOver, rotationZ, .
           }
         };
 
-        const handleGesture = (event) =>{
-          if (touchendX < touchstartX) {
-              moveLeft()
+        const handleGesture = () => {
+          const deltaX = Math.abs(touchendX - touchstartX);
+          const deltaY = Math.abs(touchendY - touchstartY);
+        
+          if (deltaX > deltaY) {
+            // Horizontal swipe
+            if (touchendX < touchstartX) {
+              moveLeft();
+            } else if (touchendX > touchstartX) {
+              moveRight();
+            }
+          } else {
+            // Vertical swipe
+            if (touchendY < touchstartY) {
+              jump();
+            } else if (touchendY > touchstartY) {
+              slide();
+            }
           }
-      
-          if (touchendX > touchstartX) {
-              moveRight()
-          }
-      
-          if (touchendY < touchstartY) {
-              jump()
-          }
-      
-          if (touchendY > touchstartY) {
-              slide()
-          }
-      
-          if (touchendY === touchstartY) {
-              console.log('Tap');
-          }
-        }
+        };
+        
 
         window.addEventListener('touchstart', function (event) {
             touchstartX = event.changedTouches[0].screenX;
@@ -200,14 +200,7 @@ const CharacterRunning1 = ({ externalRef, setAnimation, isGameOver, rotationZ, .
         };
       }, []);
 
-      const bind = useGesture({
-        onDrag: ({ movement: [mx, my], direction: [dx, dy] }) => {
-          if (dx > 0) moveRight();
-          if (dx < 0) moveLeft();
-          if (dy < 0) jump();
-          if (dy > 0) slide();
-        }
-      });
+      
     
 
     useFrame((state, delta) => {
@@ -215,7 +208,7 @@ const CharacterRunning1 = ({ externalRef, setAnimation, isGameOver, rotationZ, .
     })
    
   return (
-    <group  {...props}  scale={0.5}  position={[0, 1.8, 4.8]} dispose={null} castShadow={true} receiveShadow={true} rotation={[-Math.PI / 2, 0, -60]} ref={group} {...bind()}>
+    <group  {...props}  scale={0.5}  position={[0, 1.8, 4.8]} dispose={null} castShadow={true} receiveShadow={true} rotation={[-Math.PI / 2, 0, -60]} ref={group}>
       <primitive object={nodes.Hips} />
       <skinnedMesh
         name="EyeLeft"

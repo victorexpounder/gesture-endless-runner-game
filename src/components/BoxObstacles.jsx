@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 const BoxObstacles = ({ characterRef, isGameOver, setIsGameOver }) => {
@@ -7,6 +7,7 @@ const BoxObstacles = ({ characterRef, isGameOver, setIsGameOver }) => {
   const boxesRef = useRef([]);
   let elapsedTime = 0; // Track time for spawning
   let [spawnFrequency, setSpawnFrequency] = useState(1.5)
+  let [spawnObstacles, setSpawnObstacles] = useState(false)
   
 
   const addBox = () => {
@@ -23,6 +24,7 @@ const BoxObstacles = ({ characterRef, isGameOver, setIsGameOver }) => {
 
   useFrame((state, delta) => {
     if (isGameOver) return; // Stop if game is over
+    if (!spawnObstacles) return
 
     elapsedTime += delta; // Accumulate time
     
@@ -60,6 +62,12 @@ const BoxObstacles = ({ characterRef, isGameOver, setIsGameOver }) => {
       }
     });
   });
+
+  useEffect(()=>{
+    setTimeout(()=>{
+      setSpawnObstacles(true)
+    }, 1000)
+  }, [])
 
   return (
     <>
