@@ -8,9 +8,10 @@ import { useFrame } from '@react-three/fiber'
 import TWEEN, { Tween, Group } from '@tweenjs/tween.js';
 import { AnimationMixer } from 'three';
 import { useGesture } from '@use-gesture/react';
+import { io } from 'socket.io-client';
 
 
-const CharacterRunning1 = ({ externalRef, setAnimation, isGameOver, rotationZ, ...props}) => {
+const CharacterRunning1 = ({ externalRef, videoRef, canvasRef, setAnimation, isGameOver, rotationZ, ...props}) => {
   const { nodes, materials } = useGLTF('/models/humans/character1/character1.glb')
   const { animations: idleAnimation } =  useFBX('/models/humans/character1/idle.fbx')
   const { animations: runningAnimation } =  useFBX('/models/humans/character1/running.fbx')
@@ -40,6 +41,9 @@ const CharacterRunning1 = ({ externalRef, setAnimation, isGameOver, rotationZ, .
   var isSliding = false
   var currentAnimation = 'running' 
   var touchstartX, touchstartY, touchendX, touchendY
+  const socketRef = useRef(null);
+  const gestureRef = useRef();
+  const SERVER_URL = "http://localhost:5000"
 
   const moveLeft = () =>{
       if(group.current.position.x !== -18)
@@ -58,6 +62,7 @@ const CharacterRunning1 = ({ externalRef, setAnimation, isGameOver, rotationZ, .
             tweenGroup.add(tweenLeft);
         }
 }
+
   const moveRight = () =>{
       if(group.current.position.x !== -18)
         {
@@ -200,11 +205,49 @@ const CharacterRunning1 = ({ externalRef, setAnimation, isGameOver, rotationZ, .
         };
       }, []);
 
+
+    // Initialize WebSocket connection
+      socketRef.current = io(SERVER_URL);
       
+      useEffect(()=>{
+        // Receive gesture from server
+        socketRef.current.on("gesture", (data) => {
+          if(gestureRef.current !== data.gesture)
+          {
+            gestureRef.current = data.gesture;
+            console.log(data.gesture)
+          }
+        });
+      }, [])
+
+      const sendFrame = () => {
+          if (!videoRef.current || !canvasRef.current) return;
+      
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext("2d");
+      
+          canvas.width = videoRef.current.videoWidth;
+          canvas.height = videoRef.current.videoHeight;
+      
+          ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL("image/png"); // Convert to base64
+          socketRef.current.emit("image", dataUrl);
+          
+        };
+      
+        useEffect(() => {
+          const interval = setInterval(sendFrame, 1000); // Send frames every 100ms
+          return () => clearInterval(interval);
+        }, []);
+    
     
 
     useFrame((state, delta) => {
       tweenGroup.update();
+      if(gestureRef.current === "handOpen")
+      {
+        jump()
+      }
     })
    
   return (

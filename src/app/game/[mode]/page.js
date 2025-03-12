@@ -3,7 +3,7 @@ import { OrbitControls, PerspectiveCamera, Sky } from '@react-three/drei';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import * as THREE from 'three';
-import React, { Suspense, useRef, useState, useEffect } from 'react';
+import React, { Suspense, useRef, useState, useEffect, use } from 'react';
 import { EffectComposer, MotionBlur } from '@react-three/postprocessing';
 import { useGLTF } from '@react-three/drei';
 import Character1 from '@/components/Character1';
@@ -17,15 +17,21 @@ import GameOverScreen from '@/components/GameOverScreen';
 import { useMediaQuery } from 'react-responsive';
 
 
-const Page = () => {
+
+const Page = ({params}) => {
 
   const [currentlane, setCurrentlane] = useState(0);
   const [animation, setAnimation] = useState("running");
+  const videoRef = useRef();
+  const canvasRef = useRef();
   const [isGameOver, setisGameOver] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const characterRef = useRef();
   const rollingGroundRef = useRef();
   const isMobile = useMediaQuery({maxWidth: 768})
+  const {mode} = use(params) 
+ 
+  
 
   
   const Skybox = () => {
@@ -34,6 +40,8 @@ const Page = () => {
   
     return <primitive attach="background" object={hdri} />;
   };
+
+  
 
   const handleReset = () => {
     setisGameOver(false)
@@ -44,10 +52,33 @@ const Page = () => {
     console.log('heroRef:', characterRef.current);
     console.log('rollingGroundSphereRef:', rollingGroundRef.current);
   }, []);
+
+  useEffect(() => {
+      if(mode === 'gesture')
+      {
+        if (navigator.mediaDevices?.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+              if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+              }
+            })
+            .catch((err) => console.error("Error accessing camera:", err));
+        } else {
+          console.error("getUserMedia not supported in this browser");
+        }
+      }
+    }, [mode]);
   
 
   return (
     <div className="w-screen h-screen">
+      {mode === 'gesture' &&
+        <div className='absolute top-0 left-0 z-50'>
+          <video ref={videoRef} autoPlay className="border lg:rounded-lg shadow-lg lg:w-60 lg:h-40" />
+          <canvas ref={canvasRef} className="hidden" />
+        </div>
+      }
       <Canvas className="w-full h-full" key={resetKey}>
         <PerspectiveCamera 
         makeDefault fov={60}  
@@ -60,7 +91,7 @@ const Page = () => {
         <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} minPolarAngle={1.1} maxPolarAngle={1.1} minAzimuthAngle={-0.2} maxAzimuthAngle={0.2}/>
         <Sky sunPosition={[100, 20, 100]} turbidity={10} rayleigh={2} />
         <Environment externalRef={rollingGroundRef} isGameOver={isGameOver}/>
-        <CharacterRunning1 rotationZ={-60} externalRef={characterRef} isGameOver={isGameOver} />
+        <CharacterRunning1 rotationZ={-60} videoRef={videoRef} canvasRef={canvasRef} externalRef={characterRef} isGameOver={isGameOver} />
         <BoxObstacles characterRef={characterRef} isGameOver={isGameOver} setIsGameOver={setisGameOver}/>
         <TreeObstacles characterRef={characterRef} setIsGameOver={setisGameOver} isGameOver={isGameOver}  />
         {isGameOver && <GameOverScreen handleReset={handleReset}/>}
