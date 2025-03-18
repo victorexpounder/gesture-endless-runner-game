@@ -1,13 +1,20 @@
 'use client'
 import Character1 from "@/components/Character1";
 import Character2 from "@/components/Character2";
-import { OrbitControls } from "@react-three/drei";
+import Character3 from "@/components/Character3";
+import Loading from "@/components/Loading";
+import { anonkey, supabaseUrl } from "@/lib/supabase";
+import { Loader, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Button, Modal } from "antd";
+import { createClient } from "@supabase/supabase-js";
+import { AutoComplete, Button, Form, Input, Modal, Select } from "antd";
+import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { io } from "socket.io-client";
+
 
 export default function Home() {
   const videoRef = useRef();
@@ -15,11 +22,27 @@ export default function Home() {
   const isMobile = useMediaQuery({maxWidth: 768})
   const [gestureContolled, setGestureControlled] = useState()
   const [gesture, setGesture] = useState("None");
-  const selectedRef = useRef(1)
+  const [selectedCharacter, setSelectedCharacter] = useState("character1");
+  const [selectedRef, setSelectedRef] = useState(1)
+  const [countries, setCountries] = useState([]);
   const [open, setOpen] = useState(true);
+  const [openInfo, setOpenInfo] = useState(false);
+  const router = useRouter()
   const SERVER_URL = "http://localhost:5000"
   const socketRef = useRef(null);
+  const {Option} = Select;
+  const [form] = Form.useForm();
+  const link = `/game/${gestureContolled? 'gesture' : 'default'}/${selectedCharacter}`;
+  const supabase = createClient(supabaseUrl, anonkey);
 
+  const layout = {
+    labelCol: {
+      span: 8,
+    },
+    wrapperCol: {
+      span: 16,
+    },
+  };
   const handleOk = () => {
       setGestureControlled(false)
       setOpen(false);
@@ -33,18 +56,29 @@ export default function Home() {
   socketRef.current = io(SERVER_URL);
   
     useEffect(()=>{
-      // Receive gesture from server
-      socketRef.current.on("gesture", (data) => {
-        if(gesture !== data.gesture)
-        {
-          setGesture(data.gesture);
-          console.log(data.gesture)
-        }
-      });
+      if(gestureContolled)
+      {
+        // Receive gesture from server
+        socketRef.current.on("gesture", (data) => {
+          if(gesture !== data.gesture)
+          {
+            setGesture(data.gesture);
+            console.log(data.gesture)
+          }
+        });
+      }
     }, [])
 
-
-  
+    useEffect(()=>{
+      if(selectedRef === 1)
+      {
+        setSelectedCharacter("character1")
+      }else if(selectedRef === 2) {
+        setSelectedCharacter("character2")
+      }else if(selectedRef === 3) {
+        setSelectedCharacter("character3")
+      }
+    }, [selectedRef])
   
   useEffect(() => {
     if(gestureContolled)
@@ -79,6 +113,23 @@ export default function Home() {
     
   };
 
+  
+  const fetchCountries = async () => {
+    const res = await axios.get('https://restcountries.com/v3.1/all?fields=name,flags')
+    setCountries(res.data)
+  };
+
+  const onFinish = async({name, country}) => {
+    const { data, error } = await supabase
+    .from("players")
+    .insert([{ name, country }]);
+
+    if (error) console.error("Error:", error);
+    else console.log("player saved:", data);
+    setOpenInfo(false)
+    router.push(link)
+  };
+
   useEffect(() => {
     const interval = setInterval(sendFrame, 1000); // Send frames every 100ms
     return () => clearInterval(interval);
@@ -87,9 +138,14 @@ export default function Home() {
   useEffect(()=>{
     if(gesture === "peace")
     {
-      selectedRef.current = selectedRef.current < 2? selectedRef.current + 1 : 1
+      setSelectedRef(selectedRef < 3? selectedRef + 1 : 1) 
     }
   }, [gesture])
+
+
+  useEffect(()=>{
+    fetchCountries()
+  }, [])
 
   
   return (
@@ -120,22 +176,23 @@ export default function Home() {
         <div className="flex flex-col max-lg:flex-col gap-4 items-center w-full h-[700px] lg:h-[500px]">
             <div 
             className={`w-full border  h-[70%] border-blue-500 shadow-2xl shadow-black`}
-            onClick={() => selectedRef.current = selectedRef.current < 2? selected.current + 1 : 1}
+            onClick={() => setSelectedRef(selectedRef < 3? selectedRef + 1 : 1)}
             >
                 <Canvas>
                   <ambientLight intensity={7}/>
                   <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1}/>
                   <directionalLight position={[10, 10, 10]} intensity={1}/>
                   <OrbitControls enableZoom={false} maxPolarAngle={Math.PI/2}/>
-                  <Suspense fallback={<>Loading...</>}>
-                    <Character1 position-y={-3} scale={selectedRef.current === 1 ? 3 : 0} />
-                    <Character2 position-y={-3} scale={selectedRef.current === 2 ? 3 : 0} />
+                  <Suspense fallback={<Loading />}>
+                    <Character1 position-y={-3} scale={selectedRef === 1 ? 3 : 0} />
+                    <Character2 position-y={-3} scale={selectedRef === 2 ? 3 : 0} />
+                    <Character3 position-y={-3} scale={selectedRef === 3 ? 3 : 0} />
                   </Suspense>
                 </Canvas>
             </div>
 
             {!gestureContolled &&
-              <Button type="primary" size="large" >Proceed</Button>
+              <Button type="primary" size="large" onClick={() => setOpenInfo(true)} >Proceed</Button>
             }
 
             <Modal
@@ -153,6 +210,66 @@ export default function Home() {
             ]}
           >
             <p>Do you want to use hand gesture controls or device controls</p>
+          </Modal>
+
+          <Modal
+            open={openInfo}
+            title="Register Player"
+            footer={[null]}
+          >
+            <Form 
+              {...layout}
+              form={form}
+              name="register"
+              style={{
+                maxWidth: 600,
+              }}
+              onFinish={onFinish}
+            >
+              <Form.Item
+                name="name"
+                label="FullName"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+              <Input placeholder="Enter Player Name" type="text"/>
+              </Form.Item>
+
+              <Form.Item
+                name="country"
+                label="Country"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <AutoComplete
+                  filterOption={(inputValue, option) =>
+                    option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                  }
+                >
+                  {countries?.map((country, index) => (
+                    <Option key={index} value={country.name.common}>
+                      <div className="flex items-center gap-2">
+                        <Image src={country.flags.png} alt={country.name.common} width={24} height={24} />
+                        <span>{country.name.common}</span>
+                      </div>
+                    </Option>
+                  ))}
+                </AutoComplete>
+              </Form.Item>
+
+              <Form.Item label={null}>
+                <Button type="primary" htmlType="submit">
+                  Register
+                </Button>
+              </Form.Item>
+
+            </Form>
           </Modal>
             
         </div>

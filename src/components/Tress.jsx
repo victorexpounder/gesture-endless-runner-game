@@ -24,7 +24,7 @@ const Trees = ({characterRef, isGameOver, setIsGameOver}) => {
   useFrame((state, delta) => {
     if (isGameOver) return;
     totalElapsedTime.current += delta;
-    if(totalElapsedTime.current > 10) {
+    if(totalElapsedTime.current > 40) {
       elapsedTime.current += delta;
   
       // Spawn tree every 0.5 seconds

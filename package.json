@@ -12,9 +12,12 @@
     "@react-three/drei": "^10.0.3",
     "@react-three/fiber": "^9.0.4",
     "@react-three/postprocessing": "^3.0.4",
+    "@supabase/supabase-js": "^2.49.1",
     "@tweenjs/tween.js": "^25.0.0",
     "@use-gesture/react": "^10.3.1",
     "antd": "^5.24.3",
+    "axios": "^1.8.3",
+    "dotenv": "^16.4.7",
     "leva": "^0.10.0",
     "motion": "^12.4.2",
     "next": "15.2.0",
@@ -22,6 +25,7 @@
     "react-dom": "^19.0.0",
     "react-responsive": "^10.0.1",
     "socket.io-client": "^4.8.1",
+    "swiftenv": "^1.0.5",
     "three": "^0.174.0"
   },
   "devDependencies": {

@@ -56,6 +56,7 @@ const BoxObstacles = ({ characterRef, isGameOver, setIsGameOver }) => {
 
         if (boxBoundingBox.intersectsBox(characterBoundingBox) && playerY < 2.0) {
           console.log("Collision detected! Game Over");
+          
           setIsGameOver(true); // Stop game updates
          
         }

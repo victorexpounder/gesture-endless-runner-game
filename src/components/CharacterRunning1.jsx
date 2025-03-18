@@ -11,13 +11,13 @@ import { useGesture } from '@use-gesture/react';
 import { io } from 'socket.io-client';
 
 
-const CharacterRunning1 = ({ externalRef, videoRef, canvasRef, setAnimation, isGameOver, rotationZ, ...props}) => {
-  const { nodes, materials } = useGLTF('/models/humans/character1/character1.glb')
-  const { animations: idleAnimation } =  useFBX('/models/humans/character1/idle.fbx')
-  const { animations: runningAnimation } =  useFBX('/models/humans/character1/running.fbx')
-  const { animations: jumpAnimation } =  useFBX('/models/humans/character1/jump.fbx')
-  const { animations: slideAnimation } =  useFBX('/models/humans/character1/slide.fbx')
-  const { animations: fallingAnimation } =  useFBX('/models/humans/character1/falling.fbx')
+const CharacterRunning1 = ({ externalRef, videoRef, canvasRef, setAnimation, isGameOver, character, rotationZ, ...props}) => {
+  const { nodes, materials } = useGLTF(`/models/humans/${character}/${character}.glb`)
+  const { animations: idleAnimation } =  useFBX(`/models/humans/${character}/idle.fbx`)
+  const { animations: runningAnimation } =  useFBX(`/models/humans/${character}/running.fbx`)
+  const { animations: jumpAnimation } =  useFBX(`/models/humans/${character}/jump.fbx`)
+  const { animations: slideAnimation } =  useFBX(`/models/humans/${character}/slide.fbx`)
+  const { animations: fallingAnimation } =  useFBX(`/models/humans/${character}/falling.fbx`)
   
   const group = useRef()
   idleAnimation[0].name = 'idle'
@@ -228,8 +228,13 @@ const CharacterRunning1 = ({ externalRef, videoRef, canvasRef, setAnimation, isG
       
           canvas.width = videoRef.current.videoWidth;
           canvas.height = videoRef.current.videoHeight;
-      
+          // Flip the frame horizontally before sending
+          ctx.save();
+          ctx.translate(canvas.width, 0); // Move origin to right
+          ctx.scale(-1, 1); // Flip horizontally
           ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+          ctx.restore();
+
           const dataUrl = canvas.toDataURL("image/png"); // Convert to base64
           socketRef.current.emit("image", dataUrl);
           
@@ -240,14 +245,21 @@ const CharacterRunning1 = ({ externalRef, videoRef, canvasRef, setAnimation, isG
           return () => clearInterval(interval);
         }, []);
     
+        
     
 
     useFrame((state, delta) => {
       tweenGroup.update();
       if(gestureRef.current === "handOpen")
-      {
-        jump()
-      }
+        {
+          jump()
+        }else if(gestureRef.current === "left")
+        {
+          moveLeft()
+        }else if(gestureRef.current === "right")
+        {
+          moveRight()
+        }
     })
    
   return (
