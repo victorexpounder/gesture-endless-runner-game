@@ -11,7 +11,7 @@ import { useGesture } from '@use-gesture/react';
 import { io } from 'socket.io-client';
 
 
-const CharacterRunning1 = ({ externalRef, videoRef, canvasRef, setAnimation, isGameOver, character, rotationZ, ...props}) => {
+const CharacterRunning1 = ({ externalRef, videoRef, canvasRef, setAnimation, isGameOver, character, mode, rotationZ, ...props}) => {
   const { nodes, materials } = useGLTF(`/models/humans/${character}/${character}.glb`)
   const { animations: idleAnimation } =  useFBX(`/models/humans/${character}/idle.fbx`)
   const { animations: runningAnimation } =  useFBX(`/models/humans/${character}/running.fbx`)
@@ -211,13 +211,16 @@ const CharacterRunning1 = ({ externalRef, videoRef, canvasRef, setAnimation, isG
       
       useEffect(()=>{
         // Receive gesture from server
-        socketRef.current.on("gesture", (data) => {
-          if(gestureRef.current !== data.gesture)
-          {
-            gestureRef.current = data.gesture;
-            console.log(data.gesture)
-          }
-        });
+        if(mode === 'gesture')
+        {
+          socketRef.current.on("gesture", (data) => {
+            if(gestureRef.current !== data.gesture)
+            {
+              gestureRef.current = data.gesture;
+              console.log(data.gesture)
+            }
+          });
+        }
       }, [])
 
       const sendFrame = () => {
@@ -241,8 +244,11 @@ const CharacterRunning1 = ({ externalRef, videoRef, canvasRef, setAnimation, isG
         };
       
         useEffect(() => {
-          const interval = setInterval(sendFrame, 1000); // Send frames every 100ms
-          return () => clearInterval(interval);
+          if(mode === 'gesture')
+          {
+            const interval = setInterval(sendFrame, 1000); // Send frames every 100ms
+            return () => clearInterval(interval);
+          }
         }, []);
     
         

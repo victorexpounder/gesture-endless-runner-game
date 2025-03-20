@@ -101,6 +101,7 @@ const Page = ({params}) => {
             externalRef={characterRef} 
             isGameOver={isGameOver} 
             character={character}
+            mode={mode}
           />
           <BoxObstacles characterRef={characterRef} isGameOver={isGameOver} setIsGameOver={setisGameOver}/>
           <TreeObstacles characterRef={characterRef} setIsGameOver={setisGameOver} isGameOver={isGameOver}  />

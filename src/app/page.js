@@ -34,6 +34,7 @@ export default function Home() {
   const [form] = Form.useForm();
   const link = `/game/${gestureContolled? 'gesture' : 'default'}/${selectedCharacter}`;
   const supabase = createClient(supabaseUrl, anonkey);
+  const player = JSON.parse(localStorage.getItem("player"));
 
   const layout = {
     labelCol: {
@@ -43,6 +44,7 @@ export default function Home() {
       span: 16,
     },
   };
+
   const handleOk = () => {
       setGestureControlled(false)
       setOpen(false);
@@ -52,33 +54,34 @@ export default function Home() {
     setOpen(false);
   };
 
-  // Initialize WebSocket connection
-  socketRef.current = io(SERVER_URL);
   
-    useEffect(()=>{
-      if(gestureContolled)
-      {
-        // Receive gesture from server
-        socketRef.current.on("gesture", (data) => {
-          if(gesture !== data.gesture)
-          {
-            setGesture(data.gesture);
-            console.log(data.gesture)
-          }
-        });
-      }
-    }, [])
 
-    useEffect(()=>{
-      if(selectedRef === 1)
-      {
-        setSelectedCharacter("character1")
-      }else if(selectedRef === 2) {
-        setSelectedCharacter("character2")
-      }else if(selectedRef === 3) {
-        setSelectedCharacter("character3")
-      }
-    }, [selectedRef])
+  useEffect(()=>{
+    if(gestureContolled)
+    {
+      // Initialize WebSocket connection
+      socketRef.current = io(SERVER_URL);
+      // Receive gesture from server
+      socketRef.current.on("gesture", (data) => {
+        if(gesture !== data.gesture)
+        {
+          setGesture(data.gesture);
+          console.log(data.gesture)
+        }
+      });
+    }
+  }, [])
+
+  useEffect(()=>{
+    if(selectedRef === 1)
+    {
+      setSelectedCharacter("character1")
+    }else if(selectedRef === 2) {
+      setSelectedCharacter("character2")
+    }else if(selectedRef === 3) {
+      setSelectedCharacter("character3")
+    }
+  }, [selectedRef])
   
   useEffect(() => {
     if(gestureContolled)
@@ -115,24 +118,38 @@ export default function Home() {
 
   
   const fetchCountries = async () => {
-    const res = await axios.get('https://restcountries.com/v3.1/all?fields=name,flags')
+    const res = await axios.get(process.env.NEXT_PUBLIC_COUNTRIES_API);
     setCountries(res.data)
   };
 
-  const onFinish = async({name, country}) => {
-    const { data, error } = await supabase
-    .from("players")
-    .insert([{ name, country }]);
+  const handleOpenInfo = () => {
+    if(player)
+    {
+      router.push(link)
+    }else{
+      setOpenInfo(true)
+    }
+  }
 
-    if (error) console.error("Error:", error);
-    else console.log("player saved:", data);
-    setOpenInfo(false)
-    router.push(link)
+  const onFinish = async({name, country}) => {
+    try {
+      const res = await supabase.from("players").insert([{ name, country }]).select();
+      console.log("player saved:", res.data[0])
+      localStorage.setItem("player", JSON.stringify(res.data[0]))
+      setOpenInfo(false)
+      router.push(link)
+    } catch (error) {
+      console.error("Error:", error);
+      setOpenInfo(false)
+    }
   };
 
   useEffect(() => {
-    const interval = setInterval(sendFrame, 1000); // Send frames every 100ms
-    return () => clearInterval(interval);
+    if(gestureContolled)
+    {
+      const interval = setInterval(sendFrame, 1000); // Send frames every 100ms
+      return () => clearInterval(interval);
+    }
   }, []);
 
   useEffect(()=>{
@@ -192,7 +209,7 @@ export default function Home() {
             </div>
 
             {!gestureContolled &&
-              <Button type="primary" size="large" onClick={() => setOpenInfo(true)} >Proceed</Button>
+              <Button type="primary" size="large" onClick={handleOpenInfo} >Proceed</Button>
             }
 
             <Modal
