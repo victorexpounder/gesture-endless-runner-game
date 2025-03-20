@@ -54,8 +54,6 @@ export default function Home() {
     setOpen(false);
   };
 
-  
-
   useEffect(()=>{
     if(gestureContolled)
     {
@@ -116,10 +114,10 @@ export default function Home() {
     
   };
 
-  
   const fetchCountries = async () => {
     const res = await axios.get(process.env.NEXT_PUBLIC_COUNTRIES_API);
     setCountries(res.data)
+    localStorage.setItem("countries", JSON.stringify(res.data))
   };
 
   const handleOpenInfo = () => {

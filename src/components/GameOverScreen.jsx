@@ -3,14 +3,14 @@ import TableComponent from "./Table";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const GameOverScreen = ({ handleReset }) => {
+const GameOverScreen = ({ handleReset, scoreSent }) => {
   const [show, setShow] = useState(false);
   const router = useRouter();
+
   useEffect(()=>{
-    setTimeout(()=>{
-      setShow(true)
-    }, [500])
-  })
+    setShow(true)
+  }, [])
+  
   return (
     <Html center>
       {show &&
@@ -30,7 +30,11 @@ const GameOverScreen = ({ handleReset }) => {
           <h1>Game Over</h1>
           <div>
             <p className="text-sm">Leader Board</p>
-            <TableComponent />
+            {scoreSent?
+              <TableComponent />
+              :
+              <p>Loading...</p>
+            }
           </div>
           <button 
             style={{

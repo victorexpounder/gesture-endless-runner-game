@@ -27,6 +27,7 @@ const Page = ({params}) => {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [isGameOver, setisGameOver] = useState(false);
+  const [scoreSent, setScoreSent] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const characterRef = useRef();
   const rollingGroundRef = useRef();
@@ -105,9 +106,9 @@ const Page = ({params}) => {
           />
           <BoxObstacles characterRef={characterRef} isGameOver={isGameOver} setIsGameOver={setisGameOver}/>
           <TreeObstacles characterRef={characterRef} setIsGameOver={setisGameOver} isGameOver={isGameOver}  />
-          <DistanceTracker isGameOver={isGameOver} isMobile={isMobile}/>
+          <DistanceTracker isGameOver={isGameOver} isMobile={isMobile} setScoreSent={setScoreSent}/>
         </Suspense>
-        {isGameOver && <GameOverScreen handleReset={handleReset}/>}
+        {isGameOver && <GameOverScreen handleReset={handleReset} scoreSent={scoreSent}/>}
       </Canvas>
     </div>
   );
