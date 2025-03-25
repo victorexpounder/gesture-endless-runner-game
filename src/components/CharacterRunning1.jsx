@@ -19,7 +19,7 @@ const CharacterRunning1 = (
   }
 ) => {
   const { nodes, materials } = useGLTF(`/models/humans/${character}/${character}.glb`)
-  const { animations: idleAnimation } =  useFBX(`/models/humans/${character}/Idle.fbx`)
+  const { animations: idleAnimation } =  useFBX(`/models/humans/${character}/idle.fbx`)
   const { animations: runningAnimation } =  useFBX(`/models/humans/${character}/running.fbx`)
   const { animations: jumpAnimation } =  useFBX(`/models/humans/${character}/Jump.fbx`)
   const { animations: slideAnimation } =  useFBX(`/models/humans/${character}/slide.fbx`)
