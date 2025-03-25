@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { Table } from 'antd';
 import { anonkey, supabaseUrl } from '@/lib/supabase';
 import { createClient } from '@supabase/supabase-js';
@@ -9,9 +9,10 @@ const supabase = createClient(supabaseUrl, anonkey);
 const TableComponent = () => {
   const [players, setPlayers] = useState([]);
   const [currentPlayer, setCurrentPlayer] = useState(null);
-  const countries = JSON.parse(localStorage.getItem("countries"))
+  const [countries, setCountries] = useState([]);
 
   useEffect(() => {
+    setCountries(JSON.parse(localStorage.getItem("countries")));
     fetchLeaderboard();
   }, []);
 

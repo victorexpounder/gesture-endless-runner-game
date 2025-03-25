@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from 'react'
 const DistanceTracker = ({isGameOver, isMobile, setScoreSent}) => {
     const [distance, setDistance] = useState(0)
     const distanceRef = useRef(0)
-    const player = JSON.parse(localStorage.getItem("player"));
+    const [player, setPlayer] = useState(null)
     const supabase = createClient(supabaseUrl, anonkey);
 
     useFrame((state, delta) => {
@@ -35,6 +35,10 @@ const DistanceTracker = ({isGameOver, isMobile, setScoreSent}) => {
             setScoreSent(true)
        }
     }
+
+    useEffect(() => {
+        setPlayer(JSON.parse(localStorage.getItem("player")));
+    }, []);
 
     useEffect(() => {
         console.log('game over:', isGameOver)

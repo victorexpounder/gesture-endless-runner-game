@@ -34,7 +34,7 @@ export default function Home() {
   const [form] = Form.useForm();
   const link = `/game/${gestureContolled? 'gesture' : 'default'}/${selectedCharacter}`;
   const supabase = createClient(supabaseUrl, anonkey);
-  const player = JSON.parse(localStorage.getItem("player"));
+  const [player, setPlayer] = useState(null);
 
   const layout = {
     labelCol: {
@@ -53,6 +53,10 @@ export default function Home() {
     setGestureControlled(true)
     setOpen(false);
   };
+
+  useEffect(() => {
+    setPlayer(JSON.parse(localStorage.getItem("player")));
+  }, []);
 
   useEffect(()=>{
     if(gestureContolled)
