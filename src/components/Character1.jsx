@@ -9,7 +9,7 @@ const Character1 = ({animationName = 'idle', setAnimation, rotationZ, ...props})
   const { nodes, materials } = useGLTF('/models/humans/character1/character1.glb')
   const { animations: idleAnimation } =  useFBX('/models/humans/character1/idle.fbx')
   const { animations: runningAnimation } =  useFBX('/models/humans/character1/running.fbx')
-  const { animations: jumpAnimation } =  useFBX('/models/humans/character1/jump.fbx')
+  const { animations: jumpAnimation } =  useFBX('/models/humans/character1/Jump.fbx')
   console.log(idleAnimation)
   const group = useRef()
   idleAnimation[0].name = 'idle'
