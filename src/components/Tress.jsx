@@ -5,11 +5,13 @@ import Hurlde1 from "./Hurdle1";
 import * as THREE from "three";
 
 
-const Trees = ({characterRef, isGameOver, setIsGameOver}) => {
+const Trees = ({character, characterRef, isGameOver, setIsGameOver}) => {
   const [trees, setTrees] = useState([]);
   const elapsedTime = useRef(0); // Track time for tree spawning
   const totalElapsedTime = useRef(0); 
   const treeRef = useRef();
+  const splatSound = new Audio('/sounds/splat.mp3');
+  const splatFemaleSound = new Audio('/sounds/splatfemale.mp3');
 
   const addTree = () => {
     const randomX = [0, 1, -1][Math.floor(Math.random() * 3)];
@@ -56,6 +58,12 @@ const Trees = ({characterRef, isGameOver, setIsGameOver}) => {
   
         if (!isSliding && !isJumping && boxBoundingBox.intersectsBox(characterBoundingBox)) {
           console.log("Collision detected! Game Over");
+          if(character === 'character1' || character === 'character2')
+          {
+            splatSound.play();
+          }else{
+            splatFemaleSound.play();
+          }
           setIsGameOver(true); // Stop game updates
         }
       }

@@ -33,6 +33,7 @@ const Page = ({params}) => {
   const rollingGroundRef = useRef();
   const isMobile = useMediaQuery({maxWidth: 768})
   const {mode, character} = use(params) 
+  
  
   
 
@@ -104,8 +105,8 @@ const Page = ({params}) => {
             character={character}
             mode={mode}
           />
-          <BoxObstacles characterRef={characterRef} isGameOver={isGameOver} setIsGameOver={setisGameOver}/>
-          <TreeObstacles characterRef={characterRef} setIsGameOver={setisGameOver} isGameOver={isGameOver}  />
+          <BoxObstacles character={character} characterRef={characterRef} isGameOver={isGameOver} setIsGameOver={setisGameOver}/>
+          <TreeObstacles character={character} characterRef={characterRef} setIsGameOver={setisGameOver} isGameOver={isGameOver}  />
           <DistanceTracker isGameOver={isGameOver} isMobile={isMobile} setScoreSent={setScoreSent}/>
         </Suspense>
         {isGameOver && <GameOverScreen handleReset={handleReset} scoreSent={scoreSent}/>}

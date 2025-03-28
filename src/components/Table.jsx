@@ -87,9 +87,10 @@ const TableComponent = () => {
       }
     },
     {
-      title: 'Score',
+      title: 'Distance',
       dataIndex: 'distance',
       key: 'distance',
+      render: (text) => <span>{text}m</span>,
     },
   ];
 

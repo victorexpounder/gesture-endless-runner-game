@@ -2,13 +2,14 @@ import { useFrame } from "@react-three/fiber";
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
-const BoxObstacles = ({ characterRef, isGameOver, setIsGameOver }) => {
+const BoxObstacles = ({ characterRef, character, isGameOver, setIsGameOver }) => {
   const [boxes, setBoxes] = useState([]);
   const boxesRef = useRef([]);
   let elapsedTime = 0; // Track time for spawning
   let [spawnFrequency, setSpawnFrequency] = useState(1.5)
   let [spawnObstacles, setSpawnObstacles] = useState(false)
-  
+  const splatSound = new Audio('/sounds/splat.mp3');
+  const splatFemaleSound = new Audio('/sounds/splatfemale.mp3');
 
   const addBox = () => {
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -56,7 +57,12 @@ const BoxObstacles = ({ characterRef, isGameOver, setIsGameOver }) => {
 
         if (boxBoundingBox.intersectsBox(characterBoundingBox) && playerY < 2.0) {
           console.log("Collision detected! Game Over");
-          
+          if(character === 'character1' || character === 'character2')
+          {
+            splatSound.play();
+          }else{
+            splatFemaleSound.play();
+          }
           setIsGameOver(true); // Stop game updates
          
         }

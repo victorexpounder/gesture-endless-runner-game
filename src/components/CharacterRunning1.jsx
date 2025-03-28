@@ -11,7 +11,7 @@ const CharacterRunning1 = (
     videoRef, 
     canvasRef, 
     setAnimation, 
-    isGameOver, 
+    isGameOver,
     character, 
     mode, 
     rotationZ,
@@ -24,7 +24,12 @@ const CharacterRunning1 = (
   const { animations: jumpAnimation } =  useFBX(`/models/humans/${character}/Jump.fbx`)
   const { animations: slideAnimation } =  useFBX(`/models/humans/${character}/slide.fbx`)
   const { animations: fallingAnimation } =  useFBX(`/models/humans/${character}/falling.fbx`)
+  const jumpMaleSound = new Audio('/sounds/jumpmale.mp3');
+  const jumpFemaleSound = new Audio('/sounds/jumpfemale.mp3');
+  const slideSound = new Audio('/sounds/slide.mp3');
+  const swishSound = new Audio('/sounds/swish.mp3');
   
+
   const group = useRef()
   idleAnimation[0].name = 'idle'
   runningAnimation[0].name = 'running'
@@ -66,6 +71,7 @@ const CharacterRunning1 = (
             
             tweenLeft.start();
             tweenGroup.add(tweenLeft);
+            swishSound.play()
         }
 }
 
@@ -84,6 +90,7 @@ const CharacterRunning1 = (
             
             tweenLeft.start();
             tweenGroup.add(tweenLeft);
+            swishSound.play()
         }
 }
   const jump = () =>{
@@ -97,7 +104,12 @@ const CharacterRunning1 = (
         actions[currentAnimation].reset().crossFadeTo(actions['running'], 0.1, false).play();
         currentAnimation = 'running'
       })
-
+      if(character === 'character1' || character === 'character2')
+      {
+        jumpMaleSound.play()
+      }else{
+        jumpFemaleSound.play()
+      }
       const jumpingUp = new Tween(group.current.position).to({ y: group.current.position.y += 0.5 }, 400);
       const jumpingDown = new Tween(group.current.position)
         .to({ y: group.current.position.y -= 0.5 }, 400);
@@ -127,6 +139,7 @@ const CharacterRunning1 = (
       actions[currentAnimation].clampWhenFinished = true;
       actions[currentAnimation].play();
       actions[currentAnimation].crossFadeTo(actions['running'], 1.9, false).play();
+      slideSound.play();
       group.current.position.y = 1.6;
       currentAnimation = 'running';
       setTimeout(() => {
