@@ -240,34 +240,41 @@ const CharacterRunning1 = (
         }
       }, [])
 
-      const sendFrame = () => {
-          if (!videoRef.current || !canvasRef.current) return;
-      
-          const canvas = canvasRef.current;
-          const ctx = canvas.getContext("2d");
-      
-          canvas.width = videoRef.current.videoWidth;
-          canvas.height = videoRef.current.videoHeight;
-          // Flip the frame horizontally before sending
-          ctx.save();
-          ctx.translate(canvas.width, 0); // Move origin to right
-          ctx.scale(-1, 1); // Flip horizontally
-          ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-          ctx.restore();
-
-          const dataUrl = canvas.toDataURL("image/png"); // Convert to base64
-          socketRef.current.emit("image", dataUrl);
-          
-        };
-      
-        useEffect(() => {
-          if(mode === 'gesture')
-          {
-            const interval = setInterval(sendFrame, 1000); // Send frames every 100ms
-            return () => clearInterval(interval);
-          }
-        }, []);
+    const sendFrame = () => {
+        if (!videoRef.current || !canvasRef.current) return;
     
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+    
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        // Flip the frame horizontally before sending
+        ctx.save();
+        ctx.translate(canvas.width, 0); // Move origin to right
+        ctx.scale(-1, 1); // Flip horizontally
+        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+
+        const dataUrl = canvas.toDataURL("image/png"); // Convert to base64
+        socketRef.current.emit("image", dataUrl);
+        
+      };
+    
+      useEffect(() => {
+        if(mode === 'gesture')
+        {
+          const interval = setInterval(sendFrame, 1000); // Send frames every 100ms
+          return () => clearInterval(interval);
+        }
+      }, []);
+
+      useEffect(()=>{
+        window.addEventListener('touchstart', ()=>{
+          swishSound.play()
+        }, {once: true})
+      }, [])
+    
+      
         
     
 
