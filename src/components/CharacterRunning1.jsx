@@ -161,126 +161,129 @@ const CharacterRunning1 = (
       if (nodes.Hips) {
         nodes.Hips.rotation.x = Math.PI / 2; // Rotate the root bone
       }
-    }, [isGameOver]); 
+  }, [isGameOver]); 
 
-    useEffect(() => {
-      if (externalRef) {
-        externalRef.current = group.current;
-      }
-    }, [externalRef]);
+  useEffect(() => {
+    if (externalRef) {
+      externalRef.current = group.current;
+    }
+  }, [externalRef]);
 
-    useEffect(() => {      
-        const handleKeyDown = (event) => {
-          if (event.key === 'ArrowLeft') {
-            moveLeft()
-          } else if (event.key === 'ArrowRight') {
-            moveRight()
-            
-          }else if (event.key === 'ArrowUp') {
-            jump()
-          }else if (event.key === 'ArrowDown') {
-            slide()
-          }
-        };
-
-        const handleGesture = () => {
-          const deltaX = Math.abs(touchendX - touchstartX);
-          const deltaY = Math.abs(touchendY - touchstartY);
-        
-          if (deltaX > deltaY) {
-            // Horizontal swipe
-            if (touchendX < touchstartX) {
-              moveLeft();
-            } else if (touchendX > touchstartX) {
-              moveRight();
-            }
-          } else {
-            // Vertical swipe
-            if (touchendY < touchstartY) {
-              jump();
-            } else if (touchendY > touchstartY) {
-              slide();
-            }
-          }
-        };
-        
-
-        window.addEventListener('touchstart', function (event) {
-            touchstartX = event.changedTouches[0].screenX;
-            touchstartY = event.changedTouches[0].screenY;
-        }, false);
-        
-        window.addEventListener('touchend', function (event) {
-            touchendX = event.changedTouches[0].screenX;
-            touchendY = event.changedTouches[0].screenY;
-            handleGesture();
-        }, false);
-        window.addEventListener('keydown', handleKeyDown);
-      
-        return () => {
-         
-          
-          window.removeEventListener('keydown', handleKeyDown);
-        };
-      }, []);
-
-      useEffect(()=>{
-        // Receive gesture from server
-        if(mode === 'gesture')
-          {
-          // Initialize WebSocket connection
-          socketRef.current = io(SERVER_URL);
-          socketRef.current.on("gesture", (data) => {
-            if(gestureRef.current !== data.gesture)
-            {
-              gestureRef.current = data.gesture;
-              console.log(data.gesture)
-            }
-          });
-        }
-      }, [])
-
-    const sendFrame = () => {
-        if (!videoRef.current || !canvasRef.current) return;
-    
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
-    
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
-        // Flip the frame horizontally before sending
-        ctx.save();
-        ctx.translate(canvas.width, 0); // Move origin to right
-        ctx.scale(-1, 1); // Flip horizontally
-        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        ctx.restore();
-
-        const dataUrl = canvas.toDataURL("image/png"); // Convert to base64
-        socketRef.current.emit("image", dataUrl);
-        
-      };
-    
-      useEffect(() => {
-        if(mode === 'gesture')
-        {
-          const interval = setInterval(sendFrame, 1000); // Send frames every 100ms
-          return () => clearInterval(interval);
-        }
-      }, []);
-
-    useFrame((state, delta) => {
-      tweenGroup.update();
-      if(gestureRef.current === "handOpen")
-        {
-          jump()
-        }else if(gestureRef.current === "left")
-        {
+  useEffect(() => {      
+      const handleKeyDown = (event) => {
+        if (event.key === 'ArrowLeft') {
           moveLeft()
-        }else if(gestureRef.current === "right")
-        {
+        } else if (event.key === 'ArrowRight') {
           moveRight()
+          
+        }else if (event.key === 'ArrowUp') {
+          jump()
+        }else if (event.key === 'ArrowDown') {
+          slide()
         }
-    })
+      };
+
+      const handleGesture = () => {
+        const deltaX = Math.abs(touchendX - touchstartX);
+        const deltaY = Math.abs(touchendY - touchstartY);
+      
+        if (deltaX > deltaY) {
+          // Horizontal swipe
+          if (touchendX < touchstartX) {
+            moveLeft();
+          } else if (touchendX > touchstartX) {
+            moveRight();
+          }
+        } else {
+          // Vertical swipe
+          if (touchendY < touchstartY) {
+            jump();
+          } else if (touchendY > touchstartY) {
+            slide();
+          }
+        }
+      };
+      
+
+      window.addEventListener('touchstart', function (event) {
+          touchstartX = event.changedTouches[0].screenX;
+          touchstartY = event.changedTouches[0].screenY;
+      }, false);
+      
+      window.addEventListener('touchend', function (event) {
+          touchendX = event.changedTouches[0].screenX;
+          touchendY = event.changedTouches[0].screenY;
+          handleGesture();
+      }, false);
+      window.addEventListener('keydown', handleKeyDown);
+    
+      return () => {
+        
+        
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+  }, []);
+
+  useEffect(()=>{
+    // Receive gesture from server
+    if(mode === 'gesture')
+      {
+      // Initialize WebSocket connection
+      socketRef.current = io(SERVER_URL);
+      socketRef.current.on("gesture", (data) => {
+        if(gestureRef.current !== data.gesture)
+        {
+          gestureRef.current = data.gesture;
+          console.log(data.gesture)
+        }
+      });
+    }
+  }, [])
+
+  useEffect(()=>{
+    if(gestureRef.current === "handOpen")
+    {
+      jump()
+    }else if(gestureRef.current === "left")
+    {
+      moveLeft()
+    }else if(gestureRef.current === "right")
+    {
+      moveRight()
+    }
+  }, [gestureRef.current])
+
+  const sendFrame = () => {
+      if (!videoRef.current || !canvasRef.current) return;
+  
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+  
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      // Flip the frame horizontally before sending
+      ctx.save();
+      ctx.translate(canvas.width, 0); // Move origin to right
+      ctx.scale(-1, 1); // Flip horizontally
+      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+
+      const dataUrl = canvas.toDataURL("image/png"); // Convert to base64
+      socketRef.current.emit("image", dataUrl);
+      
+  };
+    
+  useEffect(() => {
+    if(mode === 'gesture')
+    {
+      const interval = setInterval(sendFrame, 1000); // Send frames every 100ms
+      return () => clearInterval(interval);
+    }
+  }, []);
+
+  useFrame((state, delta) => {
+    tweenGroup.update();
+  })
    
   return (
     <group  {...props}  scale={0.5}  position={[0, 1.8, 4.8]} dispose={null} castShadow={true} receiveShadow={true} rotation={[-Math.PI / 2, 0, -60]} ref={group}>
