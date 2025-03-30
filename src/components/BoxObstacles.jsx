@@ -2,15 +2,18 @@ import { useFrame } from "@react-three/fiber";
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
+const splatSound = new Audio('/sounds/splat.mp3');
+const splatFemaleSound = new Audio('/sounds/splatfemale.mp3');
+splatSound.load();
+splatFemaleSound.load();
+
 const BoxObstacles = ({ characterRef, character, isGameOver, setIsGameOver }) => {
   const [boxes, setBoxes] = useState([]);
   const boxesRef = useRef([]);
   let elapsedTime = 0; // Track time for spawning
   let [spawnFrequency, setSpawnFrequency] = useState(1.5)
   let [spawnObstacles, setSpawnObstacles] = useState(false)
-  const splatSound = new Audio('/sounds/splat.mp3');
-  const splatFemaleSound = new Audio('/sounds/splatfemale.mp3');
-
+  
   const addBox = () => {
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
     const boxMaterial = new THREE.MeshLambertMaterial({ color: "red" });

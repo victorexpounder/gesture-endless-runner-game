@@ -5,6 +5,12 @@ import TWEEN, { Tween, Group } from '@tweenjs/tween.js';
 import { AnimationMixer } from 'three';
 import { io } from 'socket.io-client';
 
+const jumpMaleSound = new Audio('/sounds/jumpmale.mp3');
+const jumpFemaleSound = new Audio('/sounds/jumpfemale.mp3');
+const slideSound = new Audio('/sounds/slide.mp3');
+jumpMaleSound.load();
+jumpFemaleSound.load();
+slideSound.load();
 
 const CharacterRunning1 = (
   { externalRef, 
@@ -24,10 +30,6 @@ const CharacterRunning1 = (
   const { animations: jumpAnimation } =  useFBX(`/models/humans/${character}/Jump.fbx`)
   const { animations: slideAnimation } =  useFBX(`/models/humans/${character}/slide.fbx`)
   const { animations: fallingAnimation } =  useFBX(`/models/humans/${character}/falling.fbx`)
-  const jumpMaleSound = new Audio('/sounds/jumpmale.mp3');
-  const jumpFemaleSound = new Audio('/sounds/jumpfemale.mp3');
-  const slideSound = new Audio('/sounds/slide.mp3');
-  const swishSound = new Audio('/sounds/swish.mp3');
   
 
   const group = useRef()
@@ -71,7 +73,6 @@ const CharacterRunning1 = (
             
             tweenLeft.start();
             tweenGroup.add(tweenLeft);
-            swishSound.play()
         }
 }
 
@@ -90,7 +91,6 @@ const CharacterRunning1 = (
             
             tweenLeft.start();
             tweenGroup.add(tweenLeft);
-            swishSound.play()
         }
 }
   const jump = () =>{
@@ -267,16 +267,6 @@ const CharacterRunning1 = (
           return () => clearInterval(interval);
         }
       }, []);
-
-      useEffect(()=>{
-        window.addEventListener('touchstart', ()=>{
-          swishSound.play()
-        }, {once: true})
-      }, [])
-    
-      
-        
-    
 
     useFrame((state, delta) => {
       tweenGroup.update();

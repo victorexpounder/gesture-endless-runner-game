@@ -35,6 +35,8 @@ export default function Home() {
   const link = `/game/${gestureContolled? 'gesture' : 'default'}/${selectedCharacter}`;
   const supabase = createClient(supabaseUrl, anonkey);
   const [player, setPlayer] = useState(null);
+  const audioRef = useRef(null);
+
 
   const layout = {
     labelCol: {
@@ -125,6 +127,9 @@ export default function Home() {
   };
 
   const handleOpenInfo = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+    }
     if(player)
     {
       router.push(link)
@@ -169,6 +174,7 @@ export default function Home() {
   
   return (
     <div className="flex flex-col relative items-center min-h-screen p-7 pb-20 gap-12 sm:p-20">
+      <audio ref={audioRef} src="/sounds/swish.mp3" preload="auto"></audio>
       {gestureContolled &&
         <div className="lg:absolute md:top-0 lg:left-0 max-lg:sticky max-lg:top-0 max-lg:z-50">
           <video ref={videoRef} autoPlay className="border lg:rounded-lg shadow-lg lg:w-60 lg:h-40" />
