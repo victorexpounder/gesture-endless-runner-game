@@ -67,14 +67,14 @@ export default function Home() {
       socketRef.current = io(SERVER_URL);
       // Receive gesture from server
       socketRef.current.on("gesture", (data) => {
-        if(gesture !== data.gesture)
+        if(gesture !== data.gesture )
         {
           setGesture(data.gesture);
           console.log(data.gesture)
         }
       });
     }
-  }, [])
+  }, [gestureContolled])
 
   useEffect(()=>{
     if(selectedRef === 1)
@@ -106,18 +106,23 @@ export default function Home() {
 
   // Function to send frames to Flask server
   const sendFrame = () => {
+    console.log("sending frame")
     if (!videoRef.current || !canvasRef.current) return;
+  
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+  
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      // Flip the frame horizontally before sending
+      ctx.save();
+      ctx.translate(canvas.width, 0); // Move origin to right
+      ctx.scale(-1, 1); // Flip horizontally
+      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
 
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-
-    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL("image/png"); // Convert to base64
-    socketRef.current.emit("image", dataUrl);
-    
+      const dataUrl = canvas.toDataURL("image/png"); // Convert to base64
+      socketRef.current.emit("image", dataUrl);
   };
 
   const fetchCountries = async () => {
@@ -157,12 +162,14 @@ export default function Home() {
       const interval = setInterval(sendFrame, 1000); // Send frames every 100ms
       return () => clearInterval(interval);
     }
-  }, []);
+  }, [gestureContolled]);
 
   useEffect(()=>{
     if(gesture === "peace")
     {
       setSelectedRef(selectedRef < 3? selectedRef + 1 : 1) 
+    }else if(gesture === "ThumbsUp"){
+      handleOpenInfo()
     }
   }, [gesture])
 
