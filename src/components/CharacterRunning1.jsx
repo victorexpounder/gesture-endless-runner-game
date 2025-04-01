@@ -56,6 +56,7 @@ const CharacterRunning1 = (
   var touchstartX, touchstartY, touchendX, touchendY
   const socketRef = useRef(null);
   const gestureRef = useRef();
+  const prevGestureRef = useRef(null);
   const SERVER_URL = "http://localhost:5000"
 
   const moveLeft = () =>{
@@ -218,8 +219,6 @@ const CharacterRunning1 = (
       window.addEventListener('keydown', handleKeyDown);
     
       return () => {
-        
-        
         window.removeEventListener('keydown', handleKeyDown);
       };
   }, []);
@@ -239,19 +238,6 @@ const CharacterRunning1 = (
       });
     }
   }, [])
-
-  useEffect(()=>{
-    if(gestureRef.current === "handOpen")
-    {
-      jump()
-    }else if(gestureRef.current === "left")
-    {
-      moveLeft()
-    }else if(gestureRef.current === "right")
-    {
-      moveRight()
-    }
-  }, [gestureRef.current])
 
   const sendFrame = () => {
       if (!videoRef.current || !canvasRef.current) return;
@@ -283,6 +269,17 @@ const CharacterRunning1 = (
 
   useFrame((state, delta) => {
     tweenGroup.update();
+    if(gestureRef.current !== prevGestureRef.current){
+      prevGestureRef.current = gestureRef.current
+
+      if(gestureRef.current === "handOpen") {
+        jump()
+      }else if(gestureRef.current === "left") {
+        moveLeft()
+      }else if(gestureRef.current === "right") {
+        moveRight()
+      }
+    }
   })
    
   return (
