@@ -184,7 +184,16 @@ export default function Home() {
       <audio ref={audioRef} src="/sounds/swish.mp3" preload="auto"></audio>
       {gestureContolled &&
         <div className="lg:absolute md:top-0 lg:left-0 max-lg:sticky max-lg:top-0 max-lg:z-50">
-          <video ref={videoRef} autoPlay className="border lg:rounded-lg shadow-lg lg:w-60 lg:h-40" />
+          <video 
+            ref={videoRef} 
+            autoPlay 
+            playsInline
+            disablePictureInPicture
+            controls={false}
+            muted
+            style={{transform: 'scaleX(-1)'}} 
+            className="border lg:rounded-lg shadow-lg lg:w-60 lg:h-40"
+          />
           <canvas ref={canvasRef} className="hidden" />
         </div>
       }
