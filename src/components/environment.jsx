@@ -13,7 +13,7 @@ import * as THREE from 'three';
 
 const Environment = ({externalRef, isGameOver, ...props}) => {
   const groundref = useRef();
-
+  
   useEffect(() => {
     if (externalRef) {
       externalRef.current = groundref.current;
@@ -30,7 +30,7 @@ const Environment = ({externalRef, isGameOver, ...props}) => {
   return (
     <mesh  ref={groundref} receiveShadow castShadow={false} rotateZ={-Math.PI/2} position={[0, -24, 2]}>
           <dodecahedronGeometry args={[26, 3]} />
-          <meshStandardMaterial map={rockTexture} color={'0xfffafa'} flatShading    />
+          <meshStandardMaterial color={'0xfffafa'} flatShading    />
     </mesh>
   )
 }
