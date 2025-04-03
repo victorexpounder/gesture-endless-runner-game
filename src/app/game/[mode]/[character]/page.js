@@ -33,19 +33,6 @@ const Page = ({params}) => {
   const rollingGroundRef = useRef();
   const isMobile = useMediaQuery({maxWidth: 768})
   const {mode, character} = use(params) 
-  
- 
-  
-
-  
-  const Skybox = () => {
-    const hdri = useLoader(RGBELoader, '/textures/your-sky.hdr'); 
-    hdri.mapping = THREE.EquirectangularReflectionMapping;
-  
-    return <primitive attach="background" object={hdri} />;
-  };
-
-  
 
   const handleReset = () => {
     setisGameOver(false)

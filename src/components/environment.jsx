@@ -13,12 +13,6 @@ import * as THREE from 'three';
 
 const Environment = ({externalRef, isGameOver, ...props}) => {
   const groundref = useRef();
-  
-  const rockTexture = useLoader(THREE.TextureLoader, '/textures/rock2.jpg');
-
-  // Ensure the texture repeats and wraps correctly
-  rockTexture.wrapS = rockTexture.wrapT = THREE.RepeatWrapping;
-  rockTexture.repeat.set(2, 2); // Adjust to fit your needs
 
   useEffect(() => {
     if (externalRef) {
