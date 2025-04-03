@@ -1,6 +1,5 @@
 import { useFrame } from "@react-three/fiber";
 import React, { useState, useRef } from "react";
-import Barrier1 from "./Barrirer1";
 import Hurlde1 from "./Hurdle1";
 import * as THREE from "three";
 
