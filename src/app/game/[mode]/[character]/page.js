@@ -70,6 +70,9 @@ const Page = ({params}) => {
             ref={videoRef} 
             autoPlay 
             playsInline
+            disablePictureInPicture
+            controls={false}
+            muted
             style={{transform: 'scaleX(-1)'}} 
             className="border lg:rounded-lg shadow-lg lg:w-60 lg:h-40"
           />
