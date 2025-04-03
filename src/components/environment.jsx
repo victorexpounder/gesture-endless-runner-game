@@ -14,6 +14,12 @@ import * as THREE from 'three';
 const Environment = ({externalRef, isGameOver, ...props}) => {
   const groundref = useRef();
   
+  const rockTexture = useLoader(THREE.TextureLoader, '/textures/rock2.jpg');
+
+  // Ensure the texture repeats and wraps correctly
+  rockTexture.wrapS = rockTexture.wrapT = THREE.RepeatWrapping;
+  rockTexture.repeat.set(2, 2); // Adjust to fit your needs
+
   useEffect(() => {
     if (externalRef) {
       externalRef.current = groundref.current;
@@ -30,7 +36,7 @@ const Environment = ({externalRef, isGameOver, ...props}) => {
   return (
     <mesh  ref={groundref} receiveShadow castShadow={false} rotateZ={-Math.PI/2} position={[0, -24, 2]}>
           <dodecahedronGeometry args={[26, 3]} />
-          <meshStandardMaterial color={'0xfffafa'} flatShading    />
+          <meshStandardMaterial map={rockTexture} color={'0xfffafa'} flatShading    />
     </mesh>
   )
 }
