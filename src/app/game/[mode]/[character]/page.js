@@ -65,8 +65,14 @@ const Page = ({params}) => {
   return (
     <div className="w-screen h-screen">
       {mode === 'gesture' &&
-        <div className='absolute top-0 left-0 z-50'>
-          <video ref={videoRef} autoPlay style={{transform: 'scaleX(-1)'}} className="border lg:rounded-lg shadow-lg lg:w-60 lg:h-40 " />
+        <div className='absolute top-0 left-0 z-50 max-md:w-[150px] max-md:h-[150px]'>
+          <video 
+            ref={videoRef} 
+            autoPlay 
+            playsInline
+            style={{transform: 'scaleX(-1)'}} 
+            className="border lg:rounded-lg shadow-lg lg:w-60 lg:h-40"
+          />
           <canvas ref={canvasRef} className="hidden" />
         </div>
       }
