@@ -28,7 +28,7 @@ export default function Home() {
   const [open, setOpen] = useState(true);
   const [openInfo, setOpenInfo] = useState(false);
   const router = useRouter()
-  const SERVER_URL = "http://localhost:5000"
+  const SERVER_URL = "https://hand-gesture-server.onrender.com"
   const socketRef = useRef(null);
   const {Option} = Select;
   const [form] = Form.useForm();

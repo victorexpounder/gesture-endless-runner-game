@@ -57,7 +57,7 @@ const CharacterRunning1 = (
   const socketRef = useRef(null);
   const gestureRef = useRef();
   const prevGestureRef = useRef(null);
-  const SERVER_URL = "http://localhost:5000"
+  const SERVER_URL = "https://hand-gesture-server.onrender.com"
 
   const moveLeft = () =>{
       if(group.current.position.x !== -18)
