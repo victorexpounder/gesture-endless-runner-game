@@ -57,7 +57,7 @@ const CharacterRunning1 = (
   const socketRef = useRef(null);
   const gestureRef = useRef();
   const prevGestureRef = useRef(null);
-  const SERVER_URL = "https://hand-gesture-server.onrender.com"
+  const SERVER_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const moveLeft = () =>{
       if(group.current.position.x !== -18)
@@ -229,7 +229,7 @@ const CharacterRunning1 = (
       {
       // Initialize WebSocket connection
       socketRef.current = io(SERVER_URL, {
-        transports: ["websocket", "polling"],
+        transports: ["websocket", "polling"]
       });
       socketRef.current.on("gesture", (data) => {
         if(gestureRef.current !== data.gesture)

@@ -28,7 +28,7 @@ export default function Home() {
   const [open, setOpen] = useState(true);
   const [openInfo, setOpenInfo] = useState(false);
   const router = useRouter()
-  const SERVER_URL = "https://hand-gesture-server.onrender.com"
+  const SERVER_URL = process.env.NEXT_PUBLIC_API_URL;
   const socketRef = useRef(null);
   const {Option} = Select;
   const [form] = Form.useForm();
@@ -65,7 +65,7 @@ export default function Home() {
     {
       // Initialize WebSocket connection
       socketRef.current = io(SERVER_URL, {
-        transports: ["websocket", "polling"],
+        transports: ["websocket", "polling"]
       });
       // Receive gesture from server
       socketRef.current.on("gesture", (data) => {
