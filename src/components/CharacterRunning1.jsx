@@ -228,7 +228,9 @@ const CharacterRunning1 = (
     if(mode === 'gesture')
       {
       // Initialize WebSocket connection
-      socketRef.current = io(SERVER_URL);
+      socketRef.current = io(SERVER_URL, {
+        transports: ["websocket", "polling"],
+      });
       socketRef.current.on("gesture", (data) => {
         if(gestureRef.current !== data.gesture)
         {

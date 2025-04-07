@@ -64,7 +64,9 @@ export default function Home() {
     if(gestureContolled)
     {
       // Initialize WebSocket connection
-      socketRef.current = io(SERVER_URL);
+      socketRef.current = io(SERVER_URL, {
+        transports: ["websocket", "polling"],
+      });
       // Receive gesture from server
       socketRef.current.on("gesture", (data) => {
         if(gesture !== data.gesture )
