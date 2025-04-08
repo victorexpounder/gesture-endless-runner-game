@@ -7,7 +7,7 @@ const splatFemaleSound = new Audio('/sounds/splatfemale.mp3');
 splatSound.load();
 splatFemaleSound.load();
 
-const BoxObstacles = ({ characterRef, character, isGameOver, setIsGameOver }) => {
+const BoxObstacles = ({ characterRef, character, isGameOver, setIsGameOver, mode }) => {
   const [boxes, setBoxes] = useState([]);
   const boxesRef = useRef([]);
   let elapsedTime = 0; // Track time for spawning
@@ -32,7 +32,7 @@ const BoxObstacles = ({ characterRef, character, isGameOver, setIsGameOver }) =>
 
     elapsedTime += delta; // Accumulate time
     
-    // Spawn box every 0.5 seconds
+    // Spawn box
     if (elapsedTime > spawnFrequency) {
       addBox();
       if(spawnFrequency > 0.5)
@@ -45,7 +45,7 @@ const BoxObstacles = ({ characterRef, character, isGameOver, setIsGameOver }) =>
 
     // Move boxes forward & check for collision
     boxesRef.current.forEach((box, index) => {
-      box.position.z += 0.2;
+      box.position.z += mode === 'gesture' ? 0.1 : 0.2;
 
       if (box.position.z > 6) {
         boxesRef.current.splice(index, 1); // Remove from ref

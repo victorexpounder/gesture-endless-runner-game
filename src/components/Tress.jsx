@@ -9,7 +9,7 @@ const splatFemaleSound = new Audio('/sounds/splatfemale.mp3');
 splatSound.load();
 splatFemaleSound.load();
 
-const Trees = ({character, characterRef, isGameOver, setIsGameOver}) => {
+const Trees = ({character, characterRef, isGameOver, setIsGameOver, mode}) => {
   const [trees, setTrees] = useState([]);
   const elapsedTime = useRef(0); // Track time for tree spawning
   const totalElapsedTime = useRef(0); 

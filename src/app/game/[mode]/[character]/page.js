@@ -85,13 +85,44 @@ const Page = ({params}) => {
           makeDefault fov={60}  
           position={[0, 3.5, isMobile ? 10 : 6.5]}
           />
-          <hemisphereLight skyColor={'0xfffafa'} groundColor={0x000000} intensity={1}/>
-          <directionalLight color={'0xcdc1c5'} intensity={1} position={[12, 6, -7]} castShadow shadow={{mapSize: [256, 256], camera: {near:  0.5, far:50}}}/>
-          <ambientLight color={'0xfffafa'} intensity={1}/>
-          <fogExp2 color={0xf0fff0} density={0.14} />
-          <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} minPolarAngle={1.1} maxPolarAngle={1.1} minAzimuthAngle={-0.2} maxAzimuthAngle={0.2}/>
-          <Sky sunPosition={[100, 20, 100]} turbidity={10} rayleigh={2} />
-          <Environment externalRef={rollingGroundRef} isGameOver={isGameOver}/>
+          <hemisphereLight 
+            skyColor={'0xfffafa'} 
+            groundColor={0x000000} 
+            intensity={1}
+          />
+          <directionalLight 
+            color={'0xcdc1c5'} 
+            intensity={1} 
+            position={[12, 6, -7]} 
+            castShadow 
+            shadow={{mapSize: [256, 256], camera: {near:  0.5, far:50}}}
+          />
+          <ambientLight 
+            color={'0xfffafa'} 
+            intensity={1}
+          />
+          <fogExp2 
+            color={0xf0fff0} 
+            density={0.14} 
+          />
+          <OrbitControls 
+            enableZoom={false} 
+            enablePan={false} 
+            enableRotate={false} 
+            minPolarAngle={1.1} 
+            maxPolarAngle={1.1} 
+            minAzimuthAngle={-0.2} 
+            maxAzimuthAngle={0.2}
+          />
+          <Sky 
+            sunPosition={[100, 20, 100]} 
+            turbidity={10} 
+            rayleigh={2} 
+          />
+          <Environment 
+            externalRef={rollingGroundRef} 
+            isGameOver={isGameOver}
+          />
           <CharacterRunning1 
             rotationZ={-60} 
             videoRef={videoRef} 
@@ -101,9 +132,24 @@ const Page = ({params}) => {
             character={character}
             mode={mode}
           />
-          <BoxObstacles character={character} characterRef={characterRef} isGameOver={isGameOver} setIsGameOver={setisGameOver}/>
-          <TreeObstacles character={character} characterRef={characterRef} setIsGameOver={setisGameOver} isGameOver={isGameOver}  />
-          <DistanceTracker isGameOver={isGameOver} isMobile={isMobile} setScoreSent={setScoreSent}/>
+          <BoxObstacles character={character} 
+            characterRef={characterRef} 
+            isGameOver={isGameOver} 
+            setIsGameOver={setisGameOver}
+            mode={mode}
+          />
+          <TreeObstacles 
+            character={character} 
+            characterRef={characterRef} 
+            setIsGameOver={setisGameOver} 
+            isGameOver={isGameOver} 
+            mode={mode} 
+          />
+          <DistanceTracker 
+            isGameOver={isGameOver} 
+            isMobile={isMobile} 
+            setScoreSent={setScoreSent}
+          />
         </Suspense>
         {isGameOver && <GameOverScreen handleReset={handleReset} scoreSent={scoreSent}/>}
       </Canvas>
