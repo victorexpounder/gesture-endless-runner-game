@@ -242,12 +242,9 @@ export default function Home() {
             onOk={handleOk}
             onCancel={handleCancel}
             footer={[
-              <Button key="back" onClick={handleOk}>
+              <Button key="back" type="primary" onClick={handleOk}>
                 Device Controls
               </Button>,
-              <Button key="submit" type="primary" onClick={handleCancel}>
-              Gesture Controls
-            </Button>,
             ]}
           >
             <p>Do you want to use hand gesture controls or device controls</p>

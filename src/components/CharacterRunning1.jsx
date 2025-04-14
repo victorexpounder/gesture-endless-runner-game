@@ -241,7 +241,7 @@ const CharacterRunning1 = (
 
   const sendFrame = () => {
       if (!videoRef.current || !canvasRef.current) return;
-  
+      
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
   
