@@ -27,7 +27,9 @@ const TableComponent = () => {
       .from('players')
       .select('*')
       .order('score', { ascending: false })
-      .limit(3);
+      .limit(3)
+      .filter('score', 'is', 'not null')
+      ;
 
     if (error) console.log("Leaderboard Error:", error);
 
