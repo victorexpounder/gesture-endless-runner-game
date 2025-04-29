@@ -23,14 +23,15 @@ const TableComponent = () => {
     setCurrentPlayer(player);
 
     // Fetch top 5 players
-    const { data: topPlayers, error } = await supabase
+    let { data: topPlayers, error } = await supabase
       .from('players')
       .select('*')
+      .not('score', 'is', null)
       .order('score', { ascending: false })
       .limit(3)
-      .filter('score', 'is', 'not null')
       ;
 
+    
     if (error) console.log("Leaderboard Error:", error);
 
     // Fetch the current player's rank if they're not in the top 5
